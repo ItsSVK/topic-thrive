@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { msg } = TopicSchema.parse(body);
+    const { msg, roomId } = TopicSchema.parse(body);
 
     const session = await getServerSession(authOptions);
 
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const topic = await prisma.topic.create({
       data: {
         msg,
-        roomId: session.user.id,
+        roomId,
       },
     });
 

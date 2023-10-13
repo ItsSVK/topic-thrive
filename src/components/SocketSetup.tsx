@@ -5,8 +5,6 @@ import { IMsgDataTypes, PostFormInput, ResponseData } from '@/types';
 import { SubmitHandler } from 'react-hook-form';
 import PostList from './PostList';
 import axios, { AxiosResponse } from 'axios';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { socket } from '@/lib/socket';
 
 type SocketSetupProps = {
@@ -23,29 +21,16 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
   const [chat, setChat] = useState<IMsgDataTypes[]>(chats);
 
   useEffect(() => {
-    // socket.on('connect', () => {
-    // console.log('Connected to server');
     socket.emit('join_room', roomId);
-    // socket.on('receive_message', (data: any) => {
-    //   console.log(data);
-    // });
     socket.on('receive_msg', (data: IMsgDataTypes) => {
-      console.log('Received Data', data);
       setChat((pre: IMsgDataTypes[]) => [...pre, data]);
     });
 
     socket.on('count_reflect', data => {
-      console.log('Received Updated Data through Socket');
-      console.log(data);
-
       setChat((pre: IMsgDataTypes[]) => {
         const post = data.data as IMsgDataTypes;
         const likedUserIds: String[] = data.likedUserIds;
         post.isLiked = likedUserIds.includes(userId);
-        console.log('post');
-        console.log(post);
-        console.log(userId);
-
         const result = pre.map(item => (item.id === post.id ? post : item));
         return result;
       });
@@ -65,15 +50,11 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
   const submitHandler: SubmitHandler<PostFormInput> = async (data, e) => {
     e?.target.reset();
 
-    const postData: AxiosResponse = await axios.post(
-      'http://localhost:3000/api/topic',
-      {
-        msg: data.title,
-      }
-    );
+    const postData: AxiosResponse = await axios.post('/api/topic', {
+      msg: data.title,
+      roomId,
+    });
 
-    console.log('Respnse from server');
-    console.log(postData);
     setChat((pre: IMsgDataTypes[]) => [...pre, postData.data.topic]);
 
     socket.emit('send_msg', postData.data.topic);
@@ -81,7 +62,7 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
 
   const handleClick = async (key: string, isLiked: boolean) => {
     const result: AxiosResponse = await axios.post(
-      `http://localhost:3000/api/topic/like-unlike/${key}`,
+      `/api/topic/like-unlike/${key}`,
       {
         isLiked: !isLiked,
       }
@@ -94,10 +75,6 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
       const post = data.responseData as IMsgDataTypes;
       const likedUserIds: String[] = data.data;
       post.isLiked = likedUserIds.includes(userId);
-      console.log('post');
-      console.log(post);
-      console.log(userId);
-
       const result = pre.map(item => (item.id === post.id ? post : item));
       return result;
     });

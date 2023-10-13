@@ -1,6 +1,4 @@
 import DashboardComponent from '@/components/ui/Dashboard';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { authOptions } from '@/lib/auth';
 import { NextPage } from 'next';
 import { getServerSession } from 'next-auth';
@@ -12,9 +10,6 @@ const AdminDashboardPage: NextPage = async () => {
   if (!session?.user) {
     return redirect('/sign-in');
   }
-
-  console.log('Logged In User');
-  console.log(session.user);
 
   return (
     <div className="text-center">

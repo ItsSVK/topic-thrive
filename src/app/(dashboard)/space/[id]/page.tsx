@@ -55,8 +55,6 @@ const SpaceDashboardPage: NextPage<Props> = async ({ params }: Props) => {
     };
   });
 
-  console.log('logged in user Id', session.user.id);
-
   return (
     <div>
       <DescriptionComponent

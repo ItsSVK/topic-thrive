@@ -1,12 +1,12 @@
 const http = require('http');
 const { Server } = require('socket.io');
-const { instrument } = require('@socket.io/admin-ui');
+// const { instrument } = require('@socket.io/admin-ui');
 
 const httpServer = http.createServer();
 
 const io = new Server(httpServer, {
   cors: {
-    origin: ['http://localhost:3000', 'https://admin.socket.io'], // Replace with your frontend URL
+    // origin: ['http://localhost:3000', 'https://admin.socket.io'], // Replace with your frontend URL
     // methods: ['GET', 'POST'],
     origin: '*',
     credentials: true,
@@ -37,9 +37,9 @@ io.on('connection', socket => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8000;
 httpServer.listen(PORT, () => {
   console.log(`Socket.io server is running on port ${PORT}`);
 });
 
-instrument(io, { auth: false });
+// instrument(io, { auth: false });
