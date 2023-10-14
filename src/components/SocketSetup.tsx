@@ -7,6 +7,7 @@ import PostList from './PostList';
 import axios, { AxiosResponse } from 'axios';
 import { socket } from '@/lib/socket';
 import { pusherClient, pusherServer } from '@/lib/pusher';
+import { useToast } from './ui/use-toast';
 
 type SocketSetupProps = {
   roomId: string;
@@ -20,6 +21,7 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
   userId,
 }) => {
   const [chat, setChat] = useState<IMsgDataTypes[]>(chats);
+  const { toast } = useToast();
 
   useEffect(() => {
     pusherClient.subscribe(roomId);
@@ -30,6 +32,11 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
 
     pusherClient.bind('delete_topic', () => {
       setChat([]);
+      toast({
+        title: 'Topic Cleared',
+        description: 'Topics have been cleared by Space Admin',
+        variant: 'default',
+      });
     });
 
     pusherClient.bind('count_reflect', (data: any) => {
@@ -41,61 +48,7 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
         return result;
       });
     });
-
-    // pusherClient.send_event('count_reflect', roomId)
-
-    // socket.emit('join_room', roomId);
-    // socket.on('receive_msg', (data: IMsgDataTypes) => {
-    //   setChat((pre: IMsgDataTypes[]) => [...pre, data]);
-    // });
-
-    // socket.on('count_reflect', data => {
-    //   setChat((pre: IMsgDataTypes[]) => {
-    //     const post = data.data as IMsgDataTypes;
-    //     const likedUserIds: String[] = data.likedUserIds;
-    //     post.isLiked = likedUserIds.includes(userId);
-    //     const result = pre.map(item => (item.id === post.id ? post : item));
-    //     return result;
-    //   });
-    // });
-    // // });
-
-    // socket.on('connect_error', err => {
-    //   console.log(`Socket Server might be down`);
-    // });
-
-    // socket.on('error', err => {
-    //   console.log(`Socket Error`);
-    //   console.log(err.stack);
-    // });
   }, [roomId]);
-
-  // useEffect(() => {
-  //   socket.emit('join_room', roomId);
-  //   socket.on('receive_msg', (data: IMsgDataTypes) => {
-  //     setChat((pre: IMsgDataTypes[]) => [...pre, data]);
-  //   });
-
-  //   socket.on('count_reflect', data => {
-  //     setChat((pre: IMsgDataTypes[]) => {
-  //       const post = data.data as IMsgDataTypes;
-  //       const likedUserIds: String[] = data.likedUserIds;
-  //       post.isLiked = likedUserIds.includes(userId);
-  //       const result = pre.map(item => (item.id === post.id ? post : item));
-  //       return result;
-  //     });
-  //   });
-  //   // });
-
-  //   socket.on('connect_error', err => {
-  //     console.log(`Socket Server might be down`);
-  //   });
-
-  //   socket.on('error', err => {
-  //     console.log(`Socket Error`);
-  //     console.log(err.stack);
-  //   });
-  // }, [socket]);
 
   const submitHandler: SubmitHandler<PostFormInput> = async (data, e) => {
     e?.target.reset();
@@ -104,10 +57,6 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
       msg: data.title,
       roomId,
     });
-
-    // setChat((pre: IMsgDataTypes[]) => [...pre, postData.data.topic]);
-
-    // pusherClient.send_event('send_msg', postData.data.topic);
   };
 
   const handleClick = async (key: string, isLiked: boolean) => {
@@ -118,37 +67,6 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
       }
     );
     const data: ResponseData = result.data;
-    // const post = data.responseData as IMsgDataTypes;
-    // const likedUserIds: string[] = data.data;
-
-    // setChat((pre: IMsgDataTypes[]) => {
-    //   const post = data.responseData as IMsgDataTypes;
-    //   const likedUserIds: String[] = data.data;
-    //   post.isLiked = likedUserIds.includes(userId);
-    //   const result = pre.map(item => (item.id === post.id ? post : item));
-    //   return result;
-    // });
-
-    // pusherClient.send_event('count_updated', {
-    //   data: data.responseData,
-    //   likedUserIds: data.data,
-    // });
-    // socket.emit('count_updated', {
-    //   data: data.responseData,
-    //   likedUserIds: data.data,
-    // });
-
-    // setChat((pre: IMsgDataTypes[]) => {
-    //   const post = data.responseData as IMsgDataTypes;
-    //   const likedUserIds: string[] = data.data;
-    //   socket.emit('count_updated', { data: data.responseData, likedUserIds });
-    //   if (session) {
-    //     const userId = session.user.id;
-    //     post.isLiked = likedUserIds.includes(userId);
-    //   }
-    //   const result = pre.map(item => (item.id === key ? post : item));
-    //   return result;
-    // });
   };
 
   return (

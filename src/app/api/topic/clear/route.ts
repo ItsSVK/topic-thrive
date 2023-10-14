@@ -16,12 +16,34 @@ export async function POST(req: NextRequest) {
         { status: 403 }
       );
 
-    if (session?.user)
-      await prisma.topic.deleteMany({
+    if (session?.user) {
+      const topicsToDelete = await prisma.topic.findMany({
         where: {
           roomId: session.user.id,
         },
       });
+
+      for (const topic of topicsToDelete) {
+        await prisma.$transaction([
+          prisma.like.deleteMany({
+            where: {
+              topicId: topic.id,
+            },
+          }),
+          prisma.topic.delete({
+            where: {
+              id: topic.id,
+            },
+          }),
+        ]);
+      }
+    }
+
+    // await prisma.topic.deleteMany({
+    //   where: {
+    //     roomId: session.user.id,
+    //   },
+    // });
 
     pusherServer.trigger(session.user.id, 'delete_topic', {});
 

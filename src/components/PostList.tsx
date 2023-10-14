@@ -8,11 +8,11 @@ export type PostListProps = {
 };
 export const PostList: React.FC<PostListProps> = ({ chat, handleClick }) => {
   return (
-    <div className="flex flex-row gap-4 mt-6">
+    <div className="flex flex-col gap-4 mt-10">
       {chat.map(({ id, msg, count, isLiked }) => (
         <Button
           onClick={() => handleClick(id, isLiked)}
-          className="mt-6"
+          className="mt-1"
           type="button"
           key={id}
           variant={isLiked ? 'default' : 'outline'}
