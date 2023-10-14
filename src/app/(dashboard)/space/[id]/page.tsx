@@ -2,6 +2,7 @@ import DescriptionComponent from '@/components/Description';
 import SocketSetup from '@/components/SocketSetup';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
+import { pusherServer } from '@/lib/pusher';
 import { IMsgDataTypes } from '@/types';
 import { NextPage } from 'next';
 import { getServerSession } from 'next-auth';
@@ -17,7 +18,7 @@ const SpaceDashboardPage: NextPage<Props> = async ({ params }: Props) => {
   if (!session?.user) {
     return redirect('/sign-in');
   }
-  const userId: String = session.user.id;
+  const userId: string = session.user.id;
   const username: String = session.user.username;
   const pathId: String = params.id;
   const space_user = await prisma.user.findFirst({

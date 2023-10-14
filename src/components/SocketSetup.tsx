@@ -28,6 +28,10 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
       setChat((pre: IMsgDataTypes[]) => [...pre, data]);
     });
 
+    pusherClient.bind('delete_topic', () => {
+      setChat([]);
+    });
+
     pusherClient.bind('count_reflect', (data: any) => {
       setChat((pre: IMsgDataTypes[]) => {
         const post = data.data as IMsgDataTypes;

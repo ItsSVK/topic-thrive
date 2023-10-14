@@ -1,4 +1,6 @@
 'use client';
+import axios from 'axios';
+import { Button } from './ui/button';
 import { useToast } from './ui/use-toast';
 
 export type DescriptionComponentProps = {
@@ -14,6 +16,10 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
   username,
 }) => {
   const { toast } = useToast();
+
+  const clearTopic = async () => {
+    await axios.post('/api/topic/clear');
+  };
 
   return (
     <div>
@@ -44,7 +50,17 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
               {userId}
             </span>
           </h2>
-          <h2>Share it with your friends to join the same space</h2>
+          <div className="flex flex-col align-middle items-center">
+            <h2>Share it with your friends to join the same space</h2>
+            <Button
+              onClick={() => clearTopic()}
+              className="mt-6"
+              type="button"
+              variant="destructive"
+            >
+              Clear Topics
+            </Button>
+          </div>
         </div>
       )}
     </div>
