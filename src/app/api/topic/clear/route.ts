@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     //   },
     // });
 
-    pusherServer.trigger(session.user.id, 'delete_topic', {});
+    await pusherServer.trigger(session.user.id, 'delete_topic', {});
 
     return NextResponse.json(
       { message: 'Topics Cleared Successfully' },
