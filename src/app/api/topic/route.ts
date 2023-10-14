@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    pusherServer.trigger(roomId, 'receive_msg', topic);
+    await pusherServer.trigger(roomId, 'receive_msg', topic);
 
     return NextResponse.json(
       { topic, message: 'Topic created Successfully' },

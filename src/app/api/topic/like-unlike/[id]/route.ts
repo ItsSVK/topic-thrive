@@ -89,7 +89,7 @@ export async function POST(req: Request, context: any) {
     const likedUserIds = likedUsers.map(like => like.userId);
 
     if (responseData)
-      pusherServer.trigger(responseData.roomId, 'count_reflect', {
+      await pusherServer.trigger(responseData.roomId, 'count_reflect', {
         data: responseData,
         likedUserIds: likedUserIds,
       });
