@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { TopicSchema } from '@/schemas/TopicForm.schema';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { pusherServer } from '@/lib/pusher';
 
 export async function POST(req: NextRequest) {
   //   return NextResponse.json({ success: true });
@@ -25,6 +26,8 @@ export async function POST(req: NextRequest) {
         roomId,
       },
     });
+
+    pusherServer.trigger(roomId, 'receive_msg', topic);
 
     return NextResponse.json(
       { topic, message: 'Topic created Successfully' },

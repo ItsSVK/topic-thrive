@@ -8,7 +8,7 @@ import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 
 interface Props {
-  params: { id: String };
+  params: { id: string };
 }
 
 const SpaceDashboardPage: NextPage<Props> = async ({ params }: Props) => {

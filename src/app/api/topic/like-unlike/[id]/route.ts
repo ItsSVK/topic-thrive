@@ -6,6 +6,7 @@ import { authOptions } from '@/lib/auth';
 import { useParams } from 'next/navigation';
 import { NextPageContext } from 'next';
 import { RequestContext } from 'next/dist/server/base-server';
+import { pusherServer } from '@/lib/pusher';
 
 export async function POST(req: Request, context: any) {
   //   return NextResponse.json({ success: true });
@@ -86,6 +87,12 @@ export async function POST(req: Request, context: any) {
     });
 
     const likedUserIds = likedUsers.map(like => like.userId);
+
+    if (responseData)
+      pusherServer.trigger(responseData.roomId, 'count_reflect', {
+        data: responseData,
+        likedUserIds: likedUserIds,
+      });
 
     return NextResponse.json(
       {
