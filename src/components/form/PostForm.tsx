@@ -16,9 +16,13 @@ import { PostFormInput } from '@/types';
 
 interface PostFormProps {
   onSubmit: SubmitHandler<PostFormInput>;
+  isLoadingPostTopic: boolean;
 }
 
-const PostForm: React.FC<PostFormProps> = ({ onSubmit }) => {
+const PostForm: React.FC<PostFormProps> = ({
+  onSubmit,
+  isLoadingPostTopic,
+}) => {
   const form = useForm<PostFormInput>({
     defaultValues: {
       title: '',
@@ -49,9 +53,15 @@ const PostForm: React.FC<PostFormProps> = ({ onSubmit }) => {
               )}
             />
           </div>
-          <Button className="w-full mt-6" type="submit">
-            Post It
-          </Button>
+          {isLoadingPostTopic ? (
+            <Button className="w-full mt-6" disabled>
+              Please wait ...
+            </Button>
+          ) : (
+            <Button className="w-full mt-6" type="submit">
+              Post It
+            </Button>
+          )}
         </form>
       </Form>
     </div>

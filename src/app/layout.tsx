@@ -1,5 +1,6 @@
 import Navbar from '@/components/Navbar';
 import Provider from '@/components/Provider';
+import Providers from '@/components/Providers';
 import { Toaster } from '@/components/ui/toaster';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
@@ -21,10 +22,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Provider>
-          <main className="h-screen flex flex-col justify-center items-center">
-            <Navbar />
-            {children}
-          </main>
+          <Providers>
+            <main className="h-screen flex flex-col justify-center items-center">
+              {children}
+            </main>
+          </Providers>
         </Provider>
         <Toaster />
       </body>

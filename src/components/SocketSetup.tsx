@@ -8,6 +8,7 @@ import axios, { AxiosResponse } from 'axios';
 import { socket } from '@/lib/socket';
 import { pusherClient, pusherServer } from '@/lib/pusher';
 import { useToast } from './ui/use-toast';
+import { useMutation } from '@tanstack/react-query';
 
 type SocketSetupProps = {
   roomId: string;
@@ -22,6 +23,39 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
 }) => {
   const [chat, setChat] = useState<IMsgDataTypes[]>(chats);
   const { toast } = useToast();
+
+  const { mutate: postTopicMutation, isLoading: isLoadingPostTopic } =
+    useMutation({
+      mutationFn: (data: any) => {
+        return fetch('/api/topic', {
+          method: 'POST',
+          body: JSON.stringify({
+            msg: data.title,
+            roomId,
+          }),
+        });
+      },
+      onError: error => {
+        console.error(error);
+      },
+      onSuccess: () => {},
+    });
+
+  const { mutate: postTopicLikeMutation, isLoading: isLoadingPostTopicLike } =
+    useMutation({
+      mutationFn: ({ isLiked, key }: any) => {
+        return fetch(`/api/topic/like-unlike/${key}`, {
+          method: 'POST',
+          body: JSON.stringify({
+            isLiked: !isLiked,
+          }),
+        });
+      },
+      onError: error => {
+        console.error(error);
+      },
+      onSuccess: () => {},
+    });
 
   useEffect(() => {
     pusherClient.subscribe(roomId);
@@ -52,27 +86,36 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
 
   const submitHandler: SubmitHandler<PostFormInput> = async (data, e) => {
     e?.target.reset();
+    postTopicMutation(data);
 
-    const postData: AxiosResponse = await axios.post('/api/topic', {
-      msg: data.title,
-      roomId,
-    });
+    // await axios.post('/api/topic', {
+    //   msg: data.title,
+    //   roomId,
+    // });
   };
 
   const handleClick = async (key: string, isLiked: boolean) => {
-    const result: AxiosResponse = await axios.post(
-      `/api/topic/like-unlike/${key}`,
-      {
-        isLiked: !isLiked,
-      }
-    );
-    const data: ResponseData = result.data;
+    postTopicLikeMutation({ isLiked, key });
+
+    // const result: AxiosResponse = await axios.post(
+    //   `/api/topic/like-unlike/${key}`,
+    //   {
+    //     isLiked: !isLiked,
+    //   }
+    // );
   };
 
   return (
     <div>
-      <PostForm onSubmit={submitHandler} />
-      <PostList chat={chat} handleClick={handleClick} />
+      <PostForm
+        onSubmit={submitHandler}
+        isLoadingPostTopic={isLoadingPostTopic}
+      />
+      <PostList
+        chat={chat}
+        handleClick={handleClick}
+        isLoadingPostTopicLike={isLoadingPostTopicLike}
+      />
     </div>
   );
 };

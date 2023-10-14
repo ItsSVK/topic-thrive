@@ -1,6 +1,8 @@
 'use client';
 import axios from 'axios';
 import { Button } from './ui/button';
+import { useMutation } from '@tanstack/react-query';
+
 import { useToast } from './ui/use-toast';
 
 export type DescriptionComponentProps = {
@@ -17,8 +19,22 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
 }) => {
   const { toast } = useToast();
 
+  const { mutate: clearTopicMutation, isLoading: isLoadingClear } = useMutation(
+    {
+      mutationFn: () => {
+        return fetch('/api/topic/clear', {
+          method: 'POST',
+        });
+      },
+      onError: error => {
+        console.error(error);
+      },
+      onSuccess: () => {},
+    }
+  );
+
   const clearTopic = async () => {
-    await axios.post('/api/topic/clear');
+    clearTopicMutation();
   };
 
   return (
@@ -52,14 +68,28 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
           </h2>
           <div className="flex flex-col align-middle items-center">
             <h2>Share it with your friends to join the same space</h2>
-            <Button
-              onClick={() => clearTopic()}
-              className="mt-6"
-              type="button"
-              variant="destructive"
-            >
-              Clear Topics
-            </Button>
+            {isLoadingClear && (
+              <span className="loading loading-spinner"></span>
+            )}
+            {isLoadingClear ? (
+              <Button
+                className="mt-6"
+                type="button"
+                disabled
+                variant="destructive"
+              >
+                Please wait ...
+              </Button>
+            ) : (
+              <Button
+                onClick={() => clearTopic()}
+                className="mt-6"
+                type="button"
+                variant="destructive"
+              >
+                Clear Topics
+              </Button>
+            )}
           </div>
         </div>
       )}
