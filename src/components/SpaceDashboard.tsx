@@ -36,7 +36,7 @@ export const SpaceDashboardComponent: React.FC<
       });
       setAllowPost(data.data);
     });
-  }, [pathId]);
+  }, []);
 
   return (
     <div>

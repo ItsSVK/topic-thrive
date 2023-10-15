@@ -39,16 +39,25 @@ const SignInForm = () => {
         redirect: false,
       });
     },
-    onSuccess: () => {
-      router.refresh();
-      router.push('/admin');
+    onSuccess: signInData => {
+      if (signInData?.error === 'CredentialsSignin') {
+        toast({
+          title: 'Wrong credentails',
+          description: 'Please provide correct credentials',
+          variant: 'destructive',
+          duration: 2000,
+        });
+      } else {
+        router.refresh();
+        router.push('/admin');
+      }
     },
     onError: (error: any) => {
       console.error(error);
       toast({
         title: 'Something went wrong',
         variant: 'destructive',
-        value: 'Failed to proceed your request, Please try again',
+        description: 'Failed to proceed your request, Please try again',
         duration: 1000,
       });
     },
@@ -115,8 +124,12 @@ const SignInForm = () => {
             )}
           />
         </div>
-        <Button className="w-full mt-6" type="submit">
-          Sign in
+        <Button
+          className="w-full mt-6"
+          type="submit"
+          disabled={isLoadingSubmit}
+        >
+          {isLoadingSubmit ? 'Please wait ...' : 'Sign in'}
         </Button>
       </form>
       <div className="mx-auto my-4 flex w-full items-center justify-evenly before:mr-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400">

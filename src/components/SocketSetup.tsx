@@ -38,7 +38,7 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
         toast({
           title: 'Something went wrong',
           variant: 'destructive',
-          value: 'Failed to proceed your request, Please try again',
+          description: 'Failed to proceed your request, Please try again',
           duration: 1000,
         });
       },
@@ -56,7 +56,7 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
         toast({
           title: 'Something went wrong',
           variant: 'destructive',
-          value: 'Failed to proceed your request, Please try again',
+          description: 'Failed to proceed your request, Please try again',
           duration: 1000,
         });
       },
@@ -86,7 +86,7 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
         return pre.map(item => (item.id === post.id ? post : item));
       });
     });
-  }, [roomId]);
+  }, []);
 
   const submitHandler: SubmitHandler<PostFormInput> = async (data, e) => {
     e?.target.reset();

@@ -53,7 +53,7 @@ const SignUpForm = () => {
       toast({
         title: 'Something went wrong',
         variant: 'destructive',
-        value: 'Failed to proceed your request, Please try again',
+        description: 'Failed to proceed your request, Please try again',
         duration: 1000,
       });
     },

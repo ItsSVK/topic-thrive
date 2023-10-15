@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'TopicThrive',
-  description: '"Your space, your voice, your vote - join the conversation!"',
+  description: 'Your space, your voice, your vote - join the conversation!',
 };
 
 export default function RootLayout({
