@@ -18,6 +18,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '../ui/use-toast';
 import { SigninSchema } from '@/schemas/SigninForm.schema';
+import { useMutation } from '@tanstack/react-query';
 
 const SignInForm = () => {
   const { toast } = useToast();
@@ -30,30 +31,53 @@ const SignInForm = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof SigninSchema>) => {
-    const { email, password } = values;
-
-    const signInData = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-    });
-
-    if (signInData?.error) {
-      const errors = { title: 'Error', description: 'Something went Wrong' };
-      if (signInData?.error === 'CredentialsSignin') {
-        errors.title = 'Invalid Credentails';
-        errors.description = 'Please provide correct credentials';
-      }
-      toast({
-        ...errors,
-        variant: 'destructive',
+  const { mutate: submitSignIn, isLoading: isLoadingSubmit } = useMutation({
+    mutationFn: (values: any) => {
+      return signIn('credentials', {
+        email: values.email,
+        password: values.password,
+        redirect: false,
       });
-      console.log(signInData.error);
-    } else {
+    },
+    onSuccess: () => {
       router.refresh();
       router.push('/admin');
-    }
+    },
+    onError: (error: any) => {
+      console.error(error);
+      toast({
+        title: 'Something went wrong',
+        variant: 'destructive',
+        value: 'Failed to proceed your request, Please try again',
+        duration: 1000,
+      });
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof SigninSchema>) => {
+    submitSignIn(values);
+
+    // const signInData = await signIn('credentials', {
+    //   email,
+    //   password,
+    //   redirect: false,
+    // });
+
+    // if (signInData?.error) {
+    //   const errors = { title: 'Error', description: 'Something went Wrong' };
+    //   if (signInData?.error === 'CredentialsSignin') {
+    //     errors.title = 'Invalid Credentails';
+    //     errors.description = 'Please provide correct credentials';
+    //   }
+    //   toast({
+    //     ...errors,
+    //     variant: 'destructive',
+    //   });
+    //   console.log(signInData.error);
+    // } else {
+    //   router.refresh();
+    //   router.push('/admin');
+    // }
   };
 
   return (

@@ -1,14 +1,15 @@
 import prisma from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
-import { TopicSchema } from '@/schemas/TopicForm.schema';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { pusherServer } from '@/lib/pusher';
+import { AllowPostToggleSchema } from '@/schemas/AllowPostToggleForm.schema';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { msg, roomId } = TopicSchema.parse(body);
+
+    const { allow_post } = AllowPostToggleSchema.parse(body);
 
     const session = await getServerSession(authOptions);
 
@@ -18,18 +19,24 @@ export async function POST(req: NextRequest) {
         { status: 403 }
       );
 
-    const topic = await prisma.topic.create({
-      data: {
-        msg,
-        roomId,
-      },
+    if (session?.user) {
+      await prisma.user.update({
+        where: {
+          id: session.user.id,
+        },
+        data: {
+          allow_post,
+        },
+      });
+    }
+
+    await pusherServer.trigger(session.user.id, 'toggle_allow_post', {
+      data: allow_post,
     });
 
-    await pusherServer.trigger(roomId, 'receive_msg', topic);
-
     return NextResponse.json(
-      { topic, message: 'Topic created Successfully' },
-      { status: 201 }
+      { message: 'Allow Post Toggled Successfully' },
+      { status: 200 }
     );
   } catch (error) {
     console.log('Error', error);

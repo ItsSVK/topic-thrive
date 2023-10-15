@@ -1,15 +1,11 @@
 import prisma from '@/lib/db';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { LikeSchema } from '@/schemas/LikeForm.schema';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { useParams } from 'next/navigation';
-import { NextPageContext } from 'next';
-import { RequestContext } from 'next/dist/server/base-server';
 import { pusherServer } from '@/lib/pusher';
 
 export async function POST(req: Request, context: any) {
-  //   return NextResponse.json({ success: true });
   try {
     const body = await req.json();
 
@@ -17,11 +13,11 @@ export async function POST(req: Request, context: any) {
 
     const session = await getServerSession(authOptions);
 
-    // if (!session?.user)
-    //   return NextResponse.json(
-    //     { message: 'Unauthorized access. Please login to continue' },
-    //     { status: 403 }
-    //   );
+    if (!session?.user)
+      return NextResponse.json(
+        { message: 'Unauthorized access. Please login to continue' },
+        { status: 403 }
+      );
 
     const { id } = context.params;
 

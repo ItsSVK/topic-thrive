@@ -2,40 +2,59 @@
 import axios from 'axios';
 import { Button } from './ui/button';
 import { useMutation } from '@tanstack/react-query';
-
 import { useToast } from './ui/use-toast';
 
 export type DescriptionComponentProps = {
-  pathId: String;
+  pathId: string;
   userId: String;
   username: String;
   spaceUsername: String;
+  allowPost: boolean;
 };
 export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
   pathId,
   userId,
   spaceUsername,
   username,
+  allowPost,
 }) => {
   const { toast } = useToast();
 
   const { mutate: clearTopicMutation, isLoading: isLoadingClear } = useMutation(
     {
       mutationFn: () => {
-        return fetch('/api/topic/clear', {
-          method: 'POST',
-        });
+        return axios.post('/api/topic/clear');
       },
       onError: error => {
         console.error(error);
+        toast({
+          title: 'Something went wrong',
+          variant: 'destructive',
+          value: 'Failed to proceed your request, Please try again',
+          duration: 1000,
+        });
       },
-      onSuccess: () => {},
     }
   );
 
-  const clearTopic = async () => {
-    clearTopicMutation();
-  };
+  const { mutate: changeTopicMutation, isLoading: isLoadingChangeTopic } =
+    useMutation({
+      mutationFn: () => {
+        return axios.post('/api/topic/switch', { allow_post: !allowPost });
+      },
+      onError: error => {
+        console.error(error);
+        toast({
+          title: 'Something went wrong',
+          variant: 'destructive',
+          value: 'Failed to proceed your request, Please try again',
+          duration: 1000,
+        });
+      },
+    });
+
+  const changeTopic = async () => changeTopicMutation();
+  const clearTopic = async () => clearTopicMutation();
 
   return (
     <div>
@@ -68,28 +87,34 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
           </h2>
           <div className="flex flex-col align-middle items-center">
             <h2>Share it with your friends to join the same space</h2>
-            {isLoadingClear && (
-              <span className="loading loading-spinner"></span>
-            )}
-            {isLoadingClear ? (
+            <div className="flex gap-10">
+              {
+                <Button
+                  onClick={() => clearTopic()}
+                  className="mt-6"
+                  type="button"
+                  variant="destructive"
+                  disabled={isLoadingClear}
+                >
+                  {isLoadingClear ? 'Please wait ...' : 'Clear Topics'}
+                </Button>
+              }
+
               <Button
+                onClick={() => {
+                  changeTopic();
+                }}
                 className="mt-6"
                 type="button"
-                disabled
-                variant="destructive"
+                disabled={isLoadingChangeTopic}
               >
-                Please wait ...
+                {isLoadingChangeTopic
+                  ? 'Please wait ...'
+                  : allowPost
+                  ? 'Disable Topic Posting'
+                  : 'Enable Topic Posting'}
               </Button>
-            ) : (
-              <Button
-                onClick={() => clearTopic()}
-                className="mt-6"
-                type="button"
-                variant="destructive"
-              >
-                Clear Topics
-              </Button>
-            )}
+            </div>
           </div>
         </div>
       )}

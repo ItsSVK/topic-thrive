@@ -17,11 +17,13 @@ import { PostFormInput } from '@/types';
 interface PostFormProps {
   onSubmit: SubmitHandler<PostFormInput>;
   isLoadingPostTopic: boolean;
+  allowPost: boolean;
 }
 
 const PostForm: React.FC<PostFormProps> = ({
   onSubmit,
   isLoadingPostTopic,
+  allowPost,
 }) => {
   const form = useForm<PostFormInput>({
     defaultValues: {
@@ -58,7 +60,7 @@ const PostForm: React.FC<PostFormProps> = ({
               Please wait ...
             </Button>
           ) : (
-            <Button className="w-full mt-6" type="submit">
+            <Button className="w-full mt-6" type="submit" disabled={!allowPost}>
               Post It
             </Button>
           )}

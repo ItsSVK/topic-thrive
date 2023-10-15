@@ -1,12 +1,11 @@
 'use client';
 import PostForm from './form/PostForm';
-import { useEffect, useId, useState } from 'react';
-import { IMsgDataTypes, PostFormInput, ResponseData } from '@/types';
+import { useEffect, useState } from 'react';
+import { IMsgDataTypes, PostFormInput } from '@/types';
 import { SubmitHandler } from 'react-hook-form';
 import PostList from './PostList';
-import axios, { AxiosResponse } from 'axios';
-import { socket } from '@/lib/socket';
-import { pusherClient, pusherServer } from '@/lib/pusher';
+import axios from 'axios';
+import { pusherClient } from '@/lib/pusher';
 import { useToast } from './ui/use-toast';
 import { useMutation } from '@tanstack/react-query';
 
@@ -14,12 +13,14 @@ type SocketSetupProps = {
   roomId: string;
   chat: IMsgDataTypes[];
   userId: String;
+  allowPost: boolean;
 };
 
 export const SocketSetup: React.FC<SocketSetupProps> = ({
   roomId,
   chat: chats,
   userId,
+  allowPost,
 }) => {
   const [chat, setChat] = useState<IMsgDataTypes[]>(chats);
   const { toast } = useToast();
@@ -27,34 +28,38 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
   const { mutate: postTopicMutation, isLoading: isLoadingPostTopic } =
     useMutation({
       mutationFn: (data: any) => {
-        return fetch('/api/topic', {
-          method: 'POST',
-          body: JSON.stringify({
-            msg: data.title,
-            roomId,
-          }),
+        return axios.post('/api/topic', {
+          msg: data.title,
+          roomId,
         });
       },
       onError: error => {
         console.error(error);
+        toast({
+          title: 'Something went wrong',
+          variant: 'destructive',
+          value: 'Failed to proceed your request, Please try again',
+          duration: 1000,
+        });
       },
-      onSuccess: () => {},
     });
 
   const { mutate: postTopicLikeMutation, isLoading: isLoadingPostTopicLike } =
     useMutation({
       mutationFn: ({ isLiked, key }: any) => {
-        return fetch(`/api/topic/like-unlike/${key}`, {
-          method: 'POST',
-          body: JSON.stringify({
-            isLiked: !isLiked,
-          }),
+        return axios.post(`/api/topic/like-unlike/${key}`, {
+          isLiked: !isLiked,
         });
       },
       onError: error => {
         console.error(error);
+        toast({
+          title: 'Something went wrong',
+          variant: 'destructive',
+          value: 'Failed to proceed your request, Please try again',
+          duration: 1000,
+        });
       },
-      onSuccess: () => {},
     });
 
   useEffect(() => {
@@ -78,8 +83,7 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
         const post = data.data as IMsgDataTypes;
         const likedUserIds: String[] = data.likedUserIds;
         post.isLiked = likedUserIds.includes(userId);
-        const result = pre.map(item => (item.id === post.id ? post : item));
-        return result;
+        return pre.map(item => (item.id === post.id ? post : item));
       });
     });
   }, [roomId]);
@@ -87,29 +91,17 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
   const submitHandler: SubmitHandler<PostFormInput> = async (data, e) => {
     e?.target.reset();
     postTopicMutation(data);
-
-    // await axios.post('/api/topic', {
-    //   msg: data.title,
-    //   roomId,
-    // });
   };
 
-  const handleClick = async (key: string, isLiked: boolean) => {
+  const handleClick = async (key: string, isLiked: boolean) =>
     postTopicLikeMutation({ isLiked, key });
-
-    // const result: AxiosResponse = await axios.post(
-    //   `/api/topic/like-unlike/${key}`,
-    //   {
-    //     isLiked: !isLiked,
-    //   }
-    // );
-  };
 
   return (
     <div>
       <PostForm
         onSubmit={submitHandler}
         isLoadingPostTopic={isLoadingPostTopic}
+        allowPost={roomId == userId ? true : allowPost}
       />
       <PostList
         chat={chat}

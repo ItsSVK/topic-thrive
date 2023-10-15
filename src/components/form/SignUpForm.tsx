@@ -17,6 +17,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '../ui/use-toast';
 import { SignupSchema } from '@/schemas/SignupForm.schema';
+import axios from 'axios';
+import { useMutation } from '@tanstack/react-query';
 
 const SignupFormSchema = SignupSchema.extend({
   confirmPassword: z.string().min(1, 'Password confirmation is required'),
@@ -38,26 +40,27 @@ const SignUpForm = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof SignupFormSchema>) => {
-    const response = await fetch('/api/user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(values),
-    });
-
-    if (response.ok) {
+  const { mutate: submitSignUp, isLoading: isLoadingSubmit } = useMutation({
+    mutationFn: (values: any) => {
+      return axios.post('/api/user', values);
+    },
+    onSuccess: () => {
+      router.refresh();
       router.push('/sign-in');
-    } else {
-      console.error('Registration failed');
+    },
+    onError: error => {
+      console.error(error);
       toast({
-        title: 'Error',
-        description: 'Something went wrong',
+        title: 'Something went wrong',
         variant: 'destructive',
+        value: 'Failed to proceed your request, Please try again',
+        duration: 1000,
       });
-    }
-  };
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof SignupFormSchema>) =>
+    submitSignUp(values);
 
   return (
     <Form {...form}>
@@ -124,8 +127,12 @@ const SignUpForm = () => {
             )}
           />
         </div>
-        <Button className="w-full mt-6" type="submit">
-          Sign up
+        <Button
+          className="w-full mt-6"
+          type="submit"
+          disabled={isLoadingSubmit}
+        >
+          {isLoadingSubmit ? 'Please wait ...' : 'Sign up'}
         </Button>
       </form>
       <div className="mx-auto my-4 flex w-full items-center justify-evenly before:mr-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400">

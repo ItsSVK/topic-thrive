@@ -3,6 +3,7 @@ import { redirect, useRouter } from 'next/navigation';
 import { Button } from './button';
 import { Input } from './input';
 import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 
 interface DashboardComponentProps {
   userId: string;
@@ -12,6 +13,12 @@ export const DashboardComponent: React.FC<DashboardComponentProps> = ({
   userId,
 }) => {
   const router = useRouter();
+
+  const [btnDisable, setBtnDisable] = useState<boolean>(false);
+  const [btnDisableText, setBtnDisableText] = useState<string>('My Space');
+  const [btnjoinDisable, setBtnjoinDisable] = useState<boolean>(false);
+  const [btnjoinDisableText, setBtnjoinDisableText] =
+    useState<string>('Join Space');
 
   const [space, setSpace] = useState<String>('');
 
@@ -28,25 +35,31 @@ export const DashboardComponent: React.FC<DashboardComponentProps> = ({
         <Button
           onClick={() => {
             if (space !== '') {
+              setBtnjoinDisable(true);
+              setBtnjoinDisableText('Please Wait ...');
               router.push(`/space/${space}`);
               router.refresh();
             }
           }}
+          disabled={btnjoinDisable}
           className="min-w-[150px]"
         >
-          Join Space
+          {btnjoinDisableText}
         </Button>
       </div>
       <p className="mt-5">OR</p>
       <p>Can explore your Space</p>
       <Button
         onClick={() => {
+          setBtnDisable(true);
+          setBtnDisableText('Please Wait ...');
           router.push(`/space/${userId}`);
           router.refresh();
         }}
+        disabled={btnDisable}
         className="mt-5"
       >
-        My Space
+        {btnDisableText}
       </Button>
     </div>
   );

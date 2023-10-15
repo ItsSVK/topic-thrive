@@ -1,9 +1,6 @@
-import DescriptionComponent from '@/components/Description';
-import SocketSetup from '@/components/SocketSetup';
+import SpaceDashboardComponent from '@/components/SpaceDashboard';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
-import { pusherServer } from '@/lib/pusher';
-import { IMsgDataTypes } from '@/types';
 import { NextPage } from 'next';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
@@ -20,7 +17,7 @@ const SpaceDashboardPage: NextPage<Props> = async ({ params }: Props) => {
   }
   const userId: string = session.user.id;
   const username: String = session.user.username;
-  const pathId: String = params.id;
+  const pathId: string = params.id;
   const space_user = await prisma.user.findFirst({
     where: {
       id: pathId as string,
@@ -32,6 +29,8 @@ const SpaceDashboardPage: NextPage<Props> = async ({ params }: Props) => {
   if (!space_user) return redirect('/admin');
 
   const topicsList = space_user.Topic;
+  const allow_post = space_user.allow_post;
+
   const sapceUsername: String = space_user.username;
 
   // Fetch the liked topics of the current user
@@ -57,19 +56,14 @@ const SpaceDashboardPage: NextPage<Props> = async ({ params }: Props) => {
   });
 
   return (
-    <div>
-      <DescriptionComponent
-        userId={userId}
-        username={username}
-        pathId={pathId}
-        spaceUsername={sapceUsername}
-      />
-      <SocketSetup
-        roomId={params.id}
-        chat={topicsWithLikedStatus}
-        userId={userId}
-      />
-    </div>
+    <SpaceDashboardComponent
+      userId={userId}
+      username={username}
+      pathId={pathId}
+      spaceUsername={sapceUsername}
+      allow_post={allow_post as boolean}
+      chat={topicsWithLikedStatus}
+    />
   );
 };
 
