@@ -1,6 +1,7 @@
 import { Button } from './ui/button';
 import { IMsgDataTypes } from '@/types';
 import { Badge } from './ui/badge';
+import FlipMove from 'react-flip-move';
 
 export type PostListProps = {
   chat: IMsgDataTypes[];
@@ -13,9 +14,15 @@ export const PostList: React.FC<PostListProps> = ({
   isLoadingPostTopicLike,
 }) => {
   return (
-    <div className="flex flex-col gap-4 mt-10">
-      {chat.map(({ id, msg, count, isLiked }) => {
-        return (
+    <div>
+      <FlipMove
+        className="flex flex-col gap-4 mt-10"
+        staggerDurationBy="30"
+        duration={500}
+        enterAnimation={'accordionVertical'}
+        leaveAnimation={'accordionVertical'}
+      >
+        {chat.map(({ id, msg, count, isLiked }) => (
           <Button
             className="mt-1"
             type="button"
@@ -27,8 +34,8 @@ export const PostList: React.FC<PostListProps> = ({
             <Badge variant={isLiked ? 'secondary' : 'outline'}>{count}</Badge>
             {isLoadingPostTopicLike ? 'Please wait ...' : msg}
           </Button>
-        );
-      })}
+        ))}
+      </FlipMove>
     </div>
   );
 };

@@ -9,14 +9,14 @@ import { pusherClient } from '@/lib/pusher';
 import { useToast } from './ui/use-toast';
 import { useMutation } from '@tanstack/react-query';
 
-type SocketSetupProps = {
+type PostSectionProps = {
   roomId: string;
   chat: IMsgDataTypes[];
   userId: String;
   allowPost: boolean;
 };
 
-export const SocketSetup: React.FC<SocketSetupProps> = ({
+export const PostSection: React.FC<PostSectionProps> = ({
   roomId,
   chat: chats,
   userId,
@@ -83,7 +83,9 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
         const post = data.data as IMsgDataTypes;
         const likedUserIds: String[] = data.likedUserIds;
         post.isLiked = likedUserIds.includes(userId);
-        return pre.map(item => (item.id === post.id ? post : item));
+        const items = pre.map(item => (item.id === post.id ? post : item));
+        items.sort((b, a) => a.count - b.count);
+        return items;
       });
     });
   }, []);
@@ -112,4 +114,4 @@ export const SocketSetup: React.FC<SocketSetupProps> = ({
   );
 };
 
-export default SocketSetup;
+export default PostSection;

@@ -2,7 +2,7 @@
 
 import { IMsgDataTypes } from '@/types';
 import DescriptionComponent from './Description';
-import SocketSetup from './SocketSetup';
+import PostSection from './PostSection';
 import { useEffect, useState } from 'react';
 import { pusherClient } from '@/lib/pusher';
 import { useToast } from './ui/use-toast';
@@ -47,7 +47,7 @@ export const SpaceDashboardComponent: React.FC<
         spaceUsername={spaceUsername}
         allowPost={allowPost}
       />
-      <SocketSetup
+      <PostSection
         roomId={pathId}
         chat={chat}
         userId={userId}
