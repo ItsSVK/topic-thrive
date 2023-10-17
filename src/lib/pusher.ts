@@ -1,14 +1,20 @@
+import {
+  PUSHER_APP_CLUSTER,
+  PUSHER_APP_ID,
+  PUSHER_APP_KEY,
+  PUSHER_APP_SECRET,
+} from './config';
 import PusherServer from 'pusher';
 import PusherClient from 'pusher-js';
 
 export const pusherServer = new PusherServer({
-  appId: '1687462',
-  key: 'f4cf2a3731863100bf96',
-  secret: '2177121d675bd1f3a5e4',
-  cluster: 'ap2',
+  appId: PUSHER_APP_ID,
+  key: PUSHER_APP_KEY,
+  secret: PUSHER_APP_SECRET,
+  cluster: PUSHER_APP_CLUSTER,
   useTLS: true,
 });
 
-export const pusherClient = new PusherClient('f4cf2a3731863100bf96', {
-  cluster: 'ap2',
+export const pusherClient = new PusherClient(PUSHER_APP_KEY, {
+  cluster: PUSHER_APP_CLUSTER,
 });
