@@ -34,7 +34,7 @@ model Topic {
 
 model Like {
   id       String @id @default(cuid())
-  topic_id Topic  @relation(fields: [topicId], references: [id])
+  topic_id Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
   user_id  User   @relation(fields: [userId], references: [id])
   topicId  String
   userId   String

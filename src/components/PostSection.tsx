@@ -22,7 +22,9 @@ export const PostSection: React.FC<PostSectionProps> = ({
   userId,
   allowPost,
 }) => {
-  const [chat, setChat] = useState<IMsgDataTypes[]>(chats);
+  const [chat, setChat] = useState<IMsgDataTypes[]>(() =>
+    chats.sort((b, a) => a.count - b.count)
+  );
   const { toast } = useToast();
 
   const { mutate: postTopicMutation, isLoading: isLoadingPostTopic } =

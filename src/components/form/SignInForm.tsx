@@ -48,8 +48,13 @@ const SignInForm = () => {
           duration: 2000,
         });
       } else {
-        router.refresh();
+        toast({
+          title: 'Login Successful',
+          description: 'Redirecting you to dashboard',
+          duration: 500,
+        });
         router.push('/admin');
+        router.refresh();
       }
     },
     onError: (error: any) => {
@@ -65,28 +70,6 @@ const SignInForm = () => {
 
   const onSubmit = async (values: z.infer<typeof SigninSchema>) => {
     submitSignIn(values);
-
-    // const signInData = await signIn('credentials', {
-    //   email,
-    //   password,
-    //   redirect: false,
-    // });
-
-    // if (signInData?.error) {
-    //   const errors = { title: 'Error', description: 'Something went Wrong' };
-    //   if (signInData?.error === 'CredentialsSignin') {
-    //     errors.title = 'Invalid Credentails';
-    //     errors.description = 'Please provide correct credentials';
-    //   }
-    //   toast({
-    //     ...errors,
-    //     variant: 'destructive',
-    //   });
-    //   console.log(signInData.error);
-    // } else {
-    //   router.refresh();
-    //   router.push('/admin');
-    // }
   };
 
   return (

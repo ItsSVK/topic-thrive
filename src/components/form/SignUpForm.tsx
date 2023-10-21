@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '../ui/use-toast';
 import { SignupSchema } from '@/schemas/SignupForm.schema';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useMutation } from '@tanstack/react-query';
 
 const SignupFormSchema = SignupSchema.extend({
@@ -45,17 +45,35 @@ const SignUpForm = () => {
       return axios.post('/api/user', values);
     },
     onSuccess: () => {
-      router.refresh();
-      router.push('/sign-in');
-    },
-    onError: error => {
-      console.error(error);
       toast({
-        title: 'Something went wrong',
-        variant: 'destructive',
-        description: 'Failed to proceed your request, Please try again',
-        duration: 1000,
+        title: 'Signing up is Successful',
+        description: 'Please login to your dahsboard',
+        duration: 1500,
       });
+      router.push('/sign-in');
+      router.refresh();
+    },
+    onError: (error: AxiosError) => {
+      console.error(error);
+      const data: any = error.response?.data;
+      switch (error.response?.status) {
+        case 422:
+          toast({
+            title: 'Failed to proceed your request',
+            variant: 'destructive',
+            description: data.message,
+            duration: 2000,
+          });
+          break;
+        default:
+          toast({
+            title: data.message,
+            variant: 'destructive',
+            description: 'Failed to proceed your request, Please try again',
+            duration: 2000,
+          });
+          break;
+      }
     },
   });
 
