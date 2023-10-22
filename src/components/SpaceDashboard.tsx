@@ -2,7 +2,6 @@
 
 import { IMsgDataTypes } from '@/types';
 import DescriptionComponent from './Description';
-import PostSection from './PostSection';
 import { useEffect, useState } from 'react';
 import { pusherClient } from '@/lib/pusher';
 import { useToast } from './ui/use-toast';
@@ -46,12 +45,7 @@ export const SpaceDashboardComponent: React.FC<
         pathId={pathId}
         spaceUsername={spaceUsername}
         allowPost={allowPost}
-      />
-      <PostSection
-        roomId={pathId}
-        chat={chat}
-        userId={userId}
-        allowPost={allowPost}
+        chats={chat}
       />
     </div>
   );

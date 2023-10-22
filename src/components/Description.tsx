@@ -3,6 +3,13 @@ import axios from 'axios';
 import { Button } from './ui/button';
 import { useMutation } from '@tanstack/react-query';
 import { useToast } from './ui/use-toast';
+import PostForm from './form/PostForm';
+import { IMsgDataTypes, PostFormInput } from '@/types';
+import { useEffect, useState } from 'react';
+import { pusherClient } from '@/lib/pusher';
+import { SubmitHandler } from 'react-hook-form';
+import PostList from './PostList';
+import { ClipboardCheck, ClipboardList } from 'lucide-react';
 
 export type DescriptionComponentProps = {
   pathId: string;
@@ -10,6 +17,7 @@ export type DescriptionComponentProps = {
   username: String;
   spaceUsername: String;
   allowPost: boolean;
+  chats: IMsgDataTypes[];
 };
 export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
   pathId,
@@ -17,8 +25,10 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
   spaceUsername,
   username,
   allowPost,
+  chats,
 }) => {
   const { toast } = useToast();
+  const [clicked, setClicked] = useState(false);
 
   const { mutate: clearTopicMutation, isLoading: isLoadingClear } = useMutation(
     {
@@ -53,71 +63,169 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
       },
     });
 
+  const [chat, setChat] = useState<IMsgDataTypes[]>(() =>
+    chats.sort((b, a) => a.count - b.count)
+  );
+
+  const { mutate: postTopicMutation, isLoading: isLoadingPostTopic } =
+    useMutation({
+      mutationFn: (data: any) => {
+        return axios.post('/api/topic', {
+          msg: data.title,
+          roomId: pathId,
+        });
+      },
+      onError: error => {
+        console.error(error);
+        toast({
+          title: 'Something went wrong',
+          variant: 'destructive',
+          description: 'Failed to proceed your request, Please try again',
+          duration: 1000,
+        });
+      },
+    });
+
+  const { mutate: postTopicLikeMutation, isLoading: isLoadingPostTopicLike } =
+    useMutation({
+      mutationFn: ({ isLiked, key }: any) => {
+        return axios.post(`/api/topic/like-unlike/${key}`, {
+          isLiked: !isLiked,
+        });
+      },
+      onError: error => {
+        console.error(error);
+        toast({
+          title: 'Something went wrong',
+          variant: 'destructive',
+          description: 'Failed to proceed your request, Please try again',
+          duration: 1000,
+        });
+      },
+    });
+
+  useEffect(() => {
+    pusherClient.subscribe(pathId);
+
+    pusherClient.bind('receive_msg', (data: IMsgDataTypes) => {
+      setChat((pre: IMsgDataTypes[]) => [...pre, data]);
+    });
+
+    pusherClient.bind('delete_topic', () => {
+      setChat([]);
+      toast({
+        title: 'Topic Cleared',
+        description: 'Topics have been cleared by Space Admin',
+        variant: 'default',
+      });
+    });
+
+    pusherClient.bind('count_reflect', (data: any) => {
+      setChat((pre: IMsgDataTypes[]) => {
+        const post = data.data as IMsgDataTypes;
+        const likedUserIds: String[] = data.likedUserIds;
+        post.isLiked = likedUserIds.includes(userId);
+        const items = pre.map(item => (item.id === post.id ? post : item));
+        items.sort((b, a) => a.count - b.count);
+        return items;
+      });
+    });
+  }, []);
+
+  const submitHandler: SubmitHandler<PostFormInput> = async (data, e) => {
+    e?.target.reset();
+    postTopicMutation(data);
+  };
+
+  const handleClick = async (key: string, isLiked: boolean) =>
+    postTopicLikeMutation({ isLiked, key });
+
   const changeTopic = async () => changeTopicMutation();
   const clearTopic = async () => clearTopicMutation();
 
   return (
     <div>
-      <h2 className="text-2xl">
-        {userId &&
-          `Welcome ${username} To ${
-            pathId === userId ? `Your Own Space` : `${spaceUsername}'s Space`
-          }`}
-      </h2>
-      {pathId === userId && (
-        <div>
-          <h2>
-            This is your unique Space Id:{' '}
-            <span
-              className="text-blue-500 cursor-pointer"
-              title="Copy to clipboard"
-              aria-label="Copy to clipboard"
-              role="button"
-              tabIndex={0}
-              onClick={() => {
-                navigator.clipboard.writeText(userId as string);
-                toast({
-                  title: 'Space Id copied to clipboard',
-                  duration: 1000,
-                });
-              }}
-            >
-              {userId}
-            </span>
-          </h2>
-          <div className="flex flex-col align-middle items-center">
-            <h2>Share it with your friends to join the same space</h2>
-            <div className="flex gap-10">
-              {
-                <Button
-                  onClick={() => clearTopic()}
-                  className="mt-6"
-                  type="button"
-                  variant="destructive"
-                  disabled={isLoadingClear}
-                >
-                  {isLoadingClear ? 'Please wait ...' : 'Clear Topics'}
-                </Button>
-              }
+      <section className="text-gray-600 body-font mt-10">
+        <div className="container mx-auto flex px-5 pt-24 md:flex-row flex-col items-center">
+          <div className="lg:flex-grow md:w-1/2 lg:pr-24 md:pr-16 flex flex-col mb-16 md:mb-0 items-center text-center">
+            <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900">
+              {userId &&
+                `Welcome ${username} to ${
+                  pathId === userId ? `your Space` : `${spaceUsername}'s Space`
+                }`}
+            </h1>
+            {pathId === userId && (
+              <>
+                <p className="leading-relaxed">
+                  Share your SpaceID to others to join your Space/Room
+                </p>
+                <div className="flex gap-2 mt-3">
+                  <p className="mb-8 leading-relaxed font-bold">{userId}</p>
+                  <span
+                    className="cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(userId as string);
+                      setClicked(true);
+                      setTimeout(() => {
+                        setClicked(false);
+                      }, 1000);
+                      toast({
+                        title: 'Space Id copied to clipboard',
+                        duration: 1000,
+                      });
+                    }}
+                  >
+                    {clicked ? (
+                      <ClipboardCheck size={25} color="green" />
+                    ) : (
+                      <ClipboardList size={25} />
+                    )}
+                  </span>
+                </div>
+                <div className="flex lg:flex-row md:flex-col gap-3">
+                  <Button
+                    onClick={() => clearTopic()}
+                    className="inline-flex py-3 px-5 items-center"
+                    type="button"
+                    variant="destructive"
+                    disabled={isLoadingClear}
+                  >
+                    {isLoadingClear ? 'Please wait ...' : 'Clear Topics'}
+                  </Button>
 
-              <Button
-                onClick={() => {
-                  changeTopic();
-                }}
-                className="mt-6"
-                type="button"
-                disabled={isLoadingChangeTopic}
-              >
-                {isLoadingChangeTopic
-                  ? 'Please wait ...'
-                  : allowPost
-                  ? 'Disable Topic Posting'
-                  : 'Enable Topic Posting'}
-              </Button>
+                  <Button
+                    onClick={() => {
+                      changeTopic();
+                    }}
+                    className="inline-flex py-3 px-5 items-center"
+                    type="button"
+                    disabled={isLoadingChangeTopic}
+                  >
+                    {isLoadingChangeTopic
+                      ? 'Please wait ...'
+                      : allowPost
+                      ? 'Disable Topic Posting'
+                      : 'Enable Topic Posting'}
+                  </Button>
+                </div>
+              </>
+            )}
+
+            <div className="flex w-full justify-center mt-10 items-center">
+              <PostForm
+                onSubmit={submitHandler}
+                isLoadingPostTopic={isLoadingPostTopic}
+                allowPost={pathId == userId ? true : allowPost}
+              />
             </div>
           </div>
         </div>
-      )}
+      </section>
+      <PostList
+        chat={chat}
+        handleClick={handleClick}
+        isLoadingPostTopicLike={isLoadingPostTopicLike}
+      />
     </div>
   );
 };

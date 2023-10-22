@@ -1,6 +1,4 @@
-import { Button } from './ui/button';
 import { IMsgDataTypes } from '@/types';
-import { Badge } from './ui/badge';
 import FlipMove from 'react-flip-move';
 
 export type PostListProps = {
@@ -14,29 +12,45 @@ export const PostList: React.FC<PostListProps> = ({
   isLoadingPostTopicLike,
 }) => {
   return (
-    <div>
-      <FlipMove
-        className="flex flex-col gap-4 mt-10"
-        staggerDurationBy="30"
-        duration={500}
-        enterAnimation={'accordionVertical'}
-        leaveAnimation={'accordionVertical'}
-      >
-        {chat.map(({ id, msg, count, isLiked }) => (
-          <Button
-            className="mt-1"
-            type="button"
-            onClick={() => handleClick(id, isLiked)}
-            key={id}
-            disabled={isLoadingPostTopicLike}
-            variant={isLiked ? 'default' : 'outline'}
-          >
-            <Badge variant={isLiked ? 'secondary' : 'outline'}>{count}</Badge>
-            {isLoadingPostTopicLike ? 'Please wait ...' : msg}
-          </Button>
-        ))}
-      </FlipMove>
-    </div>
+    <section className="text-gray-600 body-font">
+      <div className="container px-5 py-24 mx-auto">
+        <FlipMove
+          className="flex flex-wrap -m-2"
+          staggerDurationBy="30"
+          duration={500}
+          enterAnimation={'accordionVertical'}
+          leaveAnimation={'accordionVertical'}
+        >
+          {chat.map(({ id, msg, count, isLiked }) => (
+            <button
+              className="p-2 lg:w-1/3 md:w-1/2 w-full"
+              onClick={() => handleClick(id, isLiked)}
+              key={id}
+              disabled={isLoadingPostTopicLike}
+            >
+              <div
+                className={`h-full flex items-center border p-4 rounded-lg hover:bg-gray-100 ${
+                  isLiked ? 'bg-indigo-200' : 'border-gray-200'
+                }`}
+              >
+                <div className="w-1/4">
+                  <span
+                    className={`w-16 h-16 ${
+                      isLiked ? 'bg-white' : 'bg-gray-300'
+                    } rounded-full mr-4 flex justify-center items-center`}
+                  >
+                    {count}
+                  </span>
+                </div>
+                <h2 className="text-gray-900 title-font font-medium w-3/4">
+                  {isLoadingPostTopicLike ? 'Please wait ...' : msg}
+                </h2>
+              </div>
+            </button>
+          ))}
+        </FlipMove>
+      </div>
+    </section>
   );
 };
 

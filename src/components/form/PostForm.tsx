@@ -6,7 +6,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
@@ -32,41 +31,38 @@ const PostForm: React.FC<PostFormProps> = ({
   });
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="min-w-0">
-          <div className="space-y-2">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel htmlFor="title">Type Your Topic</FormLabel>
-                  <FormControl>
-                    <Input
-                      id="title"
-                      aria-describedby="title"
-                      {...form.register('title', { required: true })}
-                      placeholder="Test Topic"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          {isLoadingPostTopic ? (
-            <Button className="w-full mt-6" disabled>
-              Please wait ...
-            </Button>
-          ) : (
-            <Button className="w-full mt-6" type="submit" disabled={!allowPost}>
-              Post It
-            </Button>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col w-full justify-center items-center lg:flex-row gap-3"
+      >
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem className="relative w-full md:w-3/4  xl:w-1/2">
+              <FormControl>
+                <Input
+                  id="title"
+                  aria-describedby="title"
+                  {...form.register('title', { required: true })}
+                  className="w-full bg-gray-100 rounded border bg-opacity-50 border-gray-300 focus:ring-2 focus:ring-indigo-200 focus:bg-transparent focus:border-indigo-500 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                  placeholder="Type Your Topic"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
-        </form>
-      </Form>
-    </div>
+        />
+        <Button
+          className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg w-1/2 md:w-1/4 mt-3 lg:mt-0"
+          type="submit"
+          disabled={isLoadingPostTopic ?? !allowPost}
+        >
+          {isLoadingPostTopic ? 'Please wait ...' : 'Post It'}
+        </Button>
+      </form>
+    </Form>
   );
 };
 
