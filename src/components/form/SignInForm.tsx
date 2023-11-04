@@ -40,13 +40,22 @@ const SignInForm = () => {
       });
     },
     onSuccess: signInData => {
-      if (signInData?.error === 'CredentialsSignin') {
-        toast({
-          title: 'Wrong credentails',
-          description: 'Please provide correct credentials',
-          variant: 'destructive',
-          duration: 2000,
-        });
+      if (signInData?.error) {
+        if (signInData?.error === 'CredentialsSignin') {
+          toast({
+            title: 'Wrong credentails',
+            description: 'Please provide correct credentials',
+            variant: 'destructive',
+            duration: 2000,
+          });
+        } else {
+          toast({
+            title: 'Something went wrong',
+            variant: 'destructive',
+            description: 'Failed to proceed your request, Please try again',
+            duration: 1000,
+          });
+        }
       } else {
         toast({
           title: 'Login Successful',
