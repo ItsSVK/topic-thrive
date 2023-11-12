@@ -29,8 +29,14 @@ export const PostList: React.FC<PostListProps> = ({
               disabled={isLoadingPostTopicLike}
             >
               <div
-                className={`h-full flex items-center border p-4 rounded-lg hover:bg-gray-100 ${
+                className={`h-full flex items-center border p-4 rounded-lg ${
                   isLiked ? 'bg-indigo-200' : 'border-gray-200'
+                } ${
+                  isLoadingPostTopicLike
+                    ? isLiked
+                      ? 'bg-indigo-100'
+                      : 'bg-slate-200'
+                    : 'hover:bg-gray-100'
                 }`}
               >
                 <div className="w-1/4">
@@ -42,8 +48,8 @@ export const PostList: React.FC<PostListProps> = ({
                     {count}
                   </span>
                 </div>
-                <h2 className="text-gray-900 title-font font-medium w-3/4">
-                  {isLoadingPostTopicLike ? 'Please wait ...' : msg}
+                <h2 className="text-gray-900 title-font font-medium w-3/4 break-words overflow-hidden">
+                  {msg}
                 </h2>
               </div>
             </button>

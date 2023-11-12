@@ -76,20 +76,19 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
       },
     });
 
-  const { mutate: postTopicLikeMutation, isLoading: isLoadingPostTopicLike } =
-    useMutation({
-      mutationFn: ({ isLiked, key }: any) => {
-        return axios.post(`/api/topic/like-unlike/${key}`, {
-          isLiked: !isLiked,
-        });
-      },
-      onError: error => {
-        console.error(error);
-        toast.error('Something went wrong', {
-          description: 'Failed to proceed your request, Please try again',
-        });
-      },
-    });
+  const {
+    mutateAsync: postTopicLikeMutation,
+    isLoading: isLoadingPostTopicLike,
+  } = useMutation({
+    mutationFn: ({ isLiked, key }: any) => {
+      return axios.post(`/api/topic/like-unlike/${key}`, {
+        isLiked: !isLiked,
+      });
+    },
+    onError: error => {
+      console.error(error);
+    },
+  });
 
   useEffect(() => {
     pusherClient.subscribe(pathId);
@@ -122,8 +121,17 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
     postTopicMutation(data);
   };
 
-  const handleClick = async (key: string, isLiked: boolean) =>
-    postTopicLikeMutation({ isLiked, key });
+  const handleClick = async (key: string, isLiked: boolean) => {
+    toast.promise(postTopicLikeMutation({ isLiked, key }), {
+      loading: 'Loading...',
+      success: () => {
+        return 'Perfect🤞🏻';
+      },
+      error: () => {
+        return 'Something went wrong, Please try again';
+      },
+    });
+  };
 
   const changeTopic = async () => changeTopicMutation();
   const clearTopic = async () => clearTopicMutation();
