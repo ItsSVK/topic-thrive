@@ -1,11 +1,11 @@
 'use client';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import { useToast } from './ui/use-toast';
+import { toast } from 'sonner';
 
 interface DashboardComponentProps {
   userId: string;
@@ -17,7 +17,6 @@ export const DashboardComponent: React.FC<DashboardComponentProps> = ({
   username,
 }) => {
   const router = useRouter();
-  const { toast } = useToast();
 
   const [btnDisable, setBtnDisable] = useState<boolean>(false);
   const [btnDisableText, setBtnDisableText] = useState<string>('My Space');
@@ -31,11 +30,8 @@ export const DashboardComponent: React.FC<DashboardComponentProps> = ({
       },
       onError: error => {
         console.error(error);
-        toast({
-          title: 'Something went wrong',
-          variant: 'destructive',
+        toast.error('Something went wrong', {
           description: 'Failed to proceed your request, Please try again',
-          duration: 1000,
         });
       },
       onSuccess: data => {
@@ -43,12 +39,9 @@ export const DashboardComponent: React.FC<DashboardComponentProps> = ({
           router.refresh();
           router.push(`/space/${space}`);
         } else {
-          toast({
-            title: 'Space is not found',
-            variant: 'destructive',
+          toast.info('Space is not found', {
             description:
               'Space with given SpaceID could not be found, please recheck',
-            duration: 2000,
           });
         }
       },

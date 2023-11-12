@@ -15,10 +15,10 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useToast } from '../ui/use-toast';
 import { SignupSchema } from '@/schemas/SignupForm.schema';
 import axios, { AxiosError } from 'axios';
 import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const SignupFormSchema = SignupSchema.extend({
   confirmPassword: z.string().min(1, 'Password confirmation is required'),
@@ -28,7 +28,6 @@ const SignupFormSchema = SignupSchema.extend({
 });
 
 const SignUpForm = () => {
-  const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof SignupFormSchema>>({
     resolver: zodResolver(SignupFormSchema),
@@ -45,10 +44,8 @@ const SignUpForm = () => {
       return axios.post('/api/user', values);
     },
     onSuccess: () => {
-      toast({
-        title: 'Signing up is Successful',
+      toast.success('Signing up is Successful', {
         description: 'Please login to your dahsboard',
-        duration: 1500,
       });
       router.push('/sign-in');
       router.refresh();
@@ -58,19 +55,13 @@ const SignUpForm = () => {
       const data: any = error.response?.data;
       switch (error.response?.status) {
         case 422:
-          toast({
-            title: 'Failed to proceed your request',
-            variant: 'destructive',
+          toast.error('Failed to proceed your request', {
             description: data.message,
-            duration: 2000,
           });
           break;
         default:
-          toast({
-            title: data.message,
-            variant: 'destructive',
+          toast.error(data.message, {
             description: 'Failed to proceed your request, Please try again',
-            duration: 2000,
           });
           break;
       }

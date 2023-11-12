@@ -1,10 +1,10 @@
 import Navbar from '@/components/Navbar';
 import Provider from '@/components/Provider';
 import Providers from '@/components/Providers';
-import { Toaster } from '@/components/ui/toaster';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -29,7 +29,7 @@ export default function RootLayout({
             </main>
           </Provider>
         </Providers>
-        <Toaster />
+        <Toaster richColors position="top-right" expand={true} />
       </body>
     </html>
   );

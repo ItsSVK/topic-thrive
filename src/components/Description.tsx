@@ -2,7 +2,6 @@
 import axios from 'axios';
 import { Button } from './ui/button';
 import { useMutation } from '@tanstack/react-query';
-import { useToast } from './ui/use-toast';
 import PostForm from './form/PostForm';
 import { IMsgDataTypes, PostFormInput } from '@/types';
 import { useEffect, useState } from 'react';
@@ -10,6 +9,7 @@ import { pusherClient } from '@/lib/pusher';
 import { SubmitHandler } from 'react-hook-form';
 import PostList from './PostList';
 import { ClipboardCheck, ClipboardList } from 'lucide-react';
+import { toast } from 'sonner';
 
 export type DescriptionComponentProps = {
   pathId: string;
@@ -27,7 +27,6 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
   allowPost,
   chats,
 }) => {
-  const { toast } = useToast();
   const [clicked, setClicked] = useState(false);
 
   const { mutate: clearTopicMutation, isLoading: isLoadingClear } = useMutation(
@@ -37,11 +36,8 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
       },
       onError: error => {
         console.error(error);
-        toast({
-          title: 'Something went wrong',
-          variant: 'destructive',
+        toast.error('Something went wrong', {
           description: 'Failed to proceed your request, Please try again',
-          duration: 1000,
         });
       },
     }
@@ -54,11 +50,8 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
       },
       onError: error => {
         console.error(error);
-        toast({
-          title: 'Something went wrong',
-          variant: 'destructive',
+        toast.error('Something went wrong', {
           description: 'Failed to proceed your request, Please try again',
-          duration: 1000,
         });
       },
     });
@@ -77,11 +70,8 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
       },
       onError: error => {
         console.error(error);
-        toast({
-          title: 'Something went wrong',
-          variant: 'destructive',
+        toast.error('Something went wrong', {
           description: 'Failed to proceed your request, Please try again',
-          duration: 1000,
         });
       },
     });
@@ -95,11 +85,8 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
       },
       onError: error => {
         console.error(error);
-        toast({
-          title: 'Something went wrong',
-          variant: 'destructive',
+        toast.error('Something went wrong', {
           description: 'Failed to proceed your request, Please try again',
-          duration: 1000,
         });
       },
     });
@@ -113,10 +100,8 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
 
     pusherClient.bind('delete_topic', () => {
       setChat([]);
-      toast({
-        title: 'Topic Cleared',
+      toast.info('Topic Cleared', {
         description: 'Topics have been cleared by Space Admin',
-        variant: 'default',
       });
     });
 
@@ -169,10 +154,7 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
                       setTimeout(() => {
                         setClicked(false);
                       }, 1000);
-                      toast({
-                        title: 'Space Id copied to clipboard',
-                        duration: 1000,
-                      });
+                      toast.success('Space Id copied to clipboard');
                     }}
                   >
                     {clicked ? (

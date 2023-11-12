@@ -16,12 +16,11 @@ import { Button } from '../ui/button';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '../ui/use-toast';
 import { SigninSchema } from '@/schemas/SigninForm.schema';
 import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const SignInForm = () => {
-  const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof SigninSchema>>({
     resolver: zodResolver(SigninSchema),
@@ -42,25 +41,17 @@ const SignInForm = () => {
     onSuccess: signInData => {
       if (signInData?.error) {
         if (signInData?.error === 'CredentialsSignin') {
-          toast({
-            title: 'Wrong credentails',
+          toast.error('Wrong credentails', {
             description: 'Please provide correct credentials',
-            variant: 'destructive',
-            duration: 2000,
           });
         } else {
-          toast({
-            title: 'Something went wrong',
-            variant: 'destructive',
+          toast.error('Something went wrong', {
             description: 'Failed to proceed your request, Please try again',
-            duration: 1000,
           });
         }
       } else {
-        toast({
-          title: 'Login Successful',
+        toast.success('Login Successful', {
           description: 'Redirecting you to dashboard',
-          duration: 500,
         });
         router.push('/admin');
         router.refresh();
@@ -68,11 +59,8 @@ const SignInForm = () => {
     },
     onError: (error: any) => {
       console.error(error);
-      toast({
-        title: 'Something went wrong',
-        variant: 'destructive',
+      toast.error('Something went wrong', {
         description: 'Failed to proceed your request, Please try again',
-        duration: 1000,
       });
     },
   });
