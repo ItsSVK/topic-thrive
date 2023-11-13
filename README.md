@@ -72,6 +72,16 @@ Once done with the project work also run this command to stop the docker contain
 docker-compose down
 ```
 
+## Some Screenshorts
+
+![1699868606664](image/README/1699868606664.png)
+
+![1699868635825](image/README/1699868635825.png)
+
+![1699868647263](image/README/1699868647263.png)
+
+![1699868886915](image/README/1699868886915.png)
+
 ## Teachnologies I have learnt and used
 
 - Next.js as Fullstack framework

@@ -137,10 +137,10 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
   const clearTopic = async () => clearTopicMutation();
 
   return (
-    <div>
-      <section className="text-gray-600 body-font mt-10">
-        <div className="container mx-auto flex px-5 pt-24 md:flex-row flex-col items-center">
-          <div className="lg:flex-grow md:w-1/2 lg:pr-24 md:pr-16 flex flex-col mb-16 md:mb-0 items-center text-center">
+    <div className="flex flex-col">
+      <section className="text-gray-600 body-font mt-10 flex flex-col justify-center items-center">
+        <div className="container mx-auto flex px-5 pt-24 justify-center items-center">
+          <div className="flex flex-col mb-16 md:mb-0 items-center text-center">
             <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900">
               {userId &&
                 `Welcome ${username} to ${
@@ -172,7 +172,7 @@ export const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
                     )}
                   </span>
                 </div>
-                <div className="flex lg:flex-row md:flex-col gap-3">
+                <div className="flex flex-row gap-3">
                   <Button
                     onClick={() => clearTopic()}
                     className="inline-flex py-3 px-5 items-center"

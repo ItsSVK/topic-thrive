@@ -40,7 +40,7 @@ const PostForm: React.FC<PostFormProps> = ({
           control={form.control}
           name="title"
           render={({ field }) => (
-            <FormItem className="relative w-full md:w-3/4  xl:w-1/2">
+            <FormItem className="relative w-full sm:w-96">
               <FormControl>
                 <Input
                   id="title"
@@ -55,7 +55,7 @@ const PostForm: React.FC<PostFormProps> = ({
           )}
         />
         <Button
-          className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg w-1/2 md:w-1/4 mt-3 lg:mt-0"
+          className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg mt-3 lg:mt-0 w-44"
           type="submit"
           disabled={isLoadingPostTopic ?? !allowPost}
         >

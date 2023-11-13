@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { buttonVariants } from './ui/button';
-import { Subtitles } from 'lucide-react';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import UserAccountnav from './UserAccountnav';
+import Help from './Help';
 
 const Navbar = async () => {
   const session = await getServerSession(authOptions);
@@ -12,20 +12,24 @@ const Navbar = async () => {
     <div className=" bg-zinc-100 py-2 border-b border-s-zinc-200 fixed w-full z-10 top-0">
       <div className="container flex items-center justify-between">
         <Link href="/admin">
-          <Subtitles />
+          {/* <Subtitles /> */}
+          <img className="w-10" src="/topicthrive-icon.png" alt="" />
         </Link>
-        {session?.user ? (
-          <UserAccountnav />
-        ) : (
-          <div className="flex gap-3">
-            <Link className={buttonVariants()} href="/sign-in">
-              Sign in
-            </Link>
-            <Link className={buttonVariants()} href="/sign-up">
-              Sign up
-            </Link>
-          </div>
-        )}
+        <div className="flex gap-8">
+          {session?.user ? (
+            <UserAccountnav />
+          ) : (
+            <div className="flex gap-3">
+              <Link className={buttonVariants()} href="/sign-in">
+                Sign in
+              </Link>
+              <Link className={buttonVariants()} href="/sign-up">
+                Sign up
+              </Link>
+            </div>
+          )}
+          <Help />
+        </div>
       </div>
     </div>
   );
