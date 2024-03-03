@@ -25,7 +25,7 @@ Next get the API Creds from Pusher Dashboard and paste it in `.env` file. And yo
 You need to have docker installed or else you have to setup postgres database locally, to run via docker just run:
 
 ```bash
-docker compose-up -d
+docker-compose up -d
 ```
 
 This will fire up postgres database and pgadmin web, you can open this address to access PGAdmin Web on browser [http://localhost:5480]()
